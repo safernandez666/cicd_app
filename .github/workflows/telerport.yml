@@ -1,3 +1,4 @@
+name: Teleport
 on:
 push:
   branches:
