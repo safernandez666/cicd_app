@@ -26,8 +26,7 @@ jobs:
       - name: Extract GitHub SHA and Set Tags
         id: vars
         run: |
-          GIT_SHORT_SHA=${{ github.sha }} 
-          echo "BUILD_TAG=${GIT_SHORT_SHA::7}" >> $GITHUB_ENV
+          echo "BUILD_TAG=${{ github.sha::7 }}" >> $GITHUB_ENV
           echo "VERSION_TAG=latest" >> $GITHUB_ENV
 
       - name: Build and Push Docker Image
