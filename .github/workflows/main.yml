@@ -1,27 +1,40 @@
 name: Build and Push Docker Image to Docker Hub
 
-on: push
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   push_to_registry:
-    name: push docker image to hub
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
+
     steps:
-      - name: check repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: set up version tag
-        id: version
-        run: echo "VERSION=$(cat app/version.txt)" >> $GITHUB_ENV
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: login to docker registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: build and push docker image to registry
+      - name: Extract GitHub SHA and Set Tags
+        id: vars
+        run: |
+          GIT_SHORT_SHA=${{ github.sha }} 
+          echo "BUILD_TAG=${GIT_SHORT_SHA::7}" >> $GITHUB_ENV
+          echo "VERSION_TAG=latest" >> $GITHUB_ENV
+
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
           context: app/
           push: true
-          tags: safernandez666/app:${{ env.VERSION }}
+          tags: |
+            safernandez666/app:${{ env.BUILD_TAG }}
+            safernandez666/app:${{ env.VERSION_TAG }}
