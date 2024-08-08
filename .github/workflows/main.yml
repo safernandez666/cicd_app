@@ -9,6 +9,10 @@ jobs:
       - name: check repository
         uses: actions/checkout@v4
 
+      - name: set up version tag
+        id: version
+        run: echo "VERSION=$(cat app/version.txt)" >> $GITHUB_ENV
+
       - name: login to docker registry
         uses: docker/login-action@v3
         with:
@@ -20,4 +24,6 @@ jobs:
         with:
           context: app/
           push: true
-          tags: safernandez666/app:latest
+          tags: |
+            safernandez666/app:latest
+            safernandez666/app:${{ env.VERSION }}
