@@ -24,6 +24,4 @@ jobs:
         with:
           context: app/
           push: true
-          tags: |
-            safernandez666/app:latest
-            safernandez666/app:${{ env.VERSION }}
+          tags: safernandez666/app:${{ env.VERSION }}
