@@ -10,7 +10,7 @@ demo:
     # able to authenticate with the cluster.
     id-token: write
     contents: read
-  false
+
   name: gh-actions-example
   runs-on: ubuntu-latest
   steps:
