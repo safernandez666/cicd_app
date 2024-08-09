@@ -1,12 +1,13 @@
-name: Build and Push Docker Image to Docker Hub New
+name: Build and Push Docker Image to Docker Hub
 
 on: 
   push:
     branches:
       - master
+
 jobs:
   push_to_registry:
-    name: Push Docker Image to Hub
+    name: Build and Push Docker Image to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -34,34 +35,29 @@ jobs:
           context: app/
           push: true
           tags: safernandez666/app:latest, safernandez666/app:${{ env.BUILD_TAG }}
-  demo:
-    permissions:
-      # The "id-token: write" permission is required or Machine ID will not be
-      # able to authenticate with the cluster.
+
+  deployment:
+    name: Access Remote Cluster with Teleport
+    runs-on: ubuntu-latest
+    permissions: # Debe estar al mismo nivel que "name" y "runs-on"
       id-token: write
       contents: read
-    false
-    name: gh-actions-example
-    runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - name: Fetch Teleport binaries
-      uses: teleport-actions/setup@v1
-      with:
-        version: 16.1.0
-    # server access example
-    - name: Fetch credentials using Machine ID
-      id: auth
-      uses: teleport-actions/auth@v2
-      with:
-        proxy: pam.esprueba.com:443
-        token: gh-actions
-        # Enable the submission of anonymous usage telemetry. This
-        # helps us shape the future development of `tbot`. You can disable this
-        # by omitting this.
-        anonymous-telemetry: 1
-    - name: List nodes (tsh)
-      # Enters a command from the cluster, in this case "tsh ls" using Machine
-      # ID credentials to list remote SSH nodes.
-      run: tsh ls
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Fetch Teleport binaries
+        uses: teleport-actions/setup@v1
+        with:
+          version: 16.1.0
+
+      - name: Fetch credentials using Machine ID
+        id: auth
+        uses: teleport-actions/auth@v2
+        with:
+          proxy: pam.esprueba.com:443
+          token: gh-actions
+          anonymous-telemetry: 1
+
+      - name: List nodes (tsh)
+        run: tsh ls
