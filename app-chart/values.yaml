@@ -8,7 +8,7 @@ image:
   repository: docker.io/safernandez666/app
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "a0514b8"
+  tag: "976e44c"
 
 imagePullSecrets: []
 nameOverride: "app"
