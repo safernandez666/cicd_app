@@ -48,7 +48,8 @@ jobs:
 
     - name: Update tag in Helm chart
       run: |
-        sed -i 's/tag: .*/tag: "'"${{ env.BUILD_TAG }}"'"/' app-chart/values.yaml
+        BUILD_TAG=${{ env.BUILD_TAG }}
+        sed -i 's/tag: .*/tag: "'"$BUILD_TAG"'"/' app-chart/values.yaml
 
     - name: Commit and push changes
       run: |
