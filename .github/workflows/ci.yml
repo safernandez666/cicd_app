@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  push_to_registry:
+  build:
     name: Build and Push Docker Image to Docker Hub
     runs-on: ubuntu-latest
     steps:
@@ -35,3 +35,23 @@ jobs:
           context: app/
           push: true
           tags: safernandez666/app:latest, safernandez666/app:${{ env.BUILD_TAG }}
+
+  update-newtag-in-helm-chart:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.TOKEN }}
+
+    - name: Update tag in Helm chart
+      run: |
+        sed -i 's/tag: .*/tag: "${{ env.BUILD_TAG }}"/' helm/go-web-app-chart/values.yaml
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.email "santiagoagustinfernandez@gmail.com"
+        git config --global user.name "Santiago Fernandez"
+        git add app-chart/values.yaml
+        git commit -m "Update tag in Helm chart"
+        git push
