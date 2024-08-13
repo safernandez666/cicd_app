@@ -38,6 +38,7 @@ jobs:
 
   update-newtag-in-helm-chart:
     name: Update Tag in Helm Chart
+    needs: build  # Esto asegura que este trabajo depende de 'build'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
