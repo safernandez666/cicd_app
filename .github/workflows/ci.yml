@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'k8s/**'
+      - 'README.md'
 
 jobs:
-  build:
-    name: Build and Push Docker Image to Docker Hub
+  build-and-update:
+    name: Build Docker Image and Update Helm Chart
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -36,28 +39,16 @@ jobs:
           push: true
           tags: safernandez666/app:latest, safernandez666/app:${{ env.BUILD_TAG }}
 
-  update-newtag-in-helm-chart:
-    name: Update Tag in Helm Chart
-    needs: build  # Esto asegura que este trabajo depende de 'build'
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.TOKEN }}
+      - name: Update tag in Helm Chart
+        run: |
+          sed -i 's/tag: .*/tag: "${{ env.BUILD_TAG }}"/' app-chart/values.yaml
 
-    - name: Extract version number from GIT SHA
-      id: extract_sha
-      run: echo "BUILD_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
-    - name: Sed 
-      run: |
-        sed -i 's/tag: .*/tag: "${{ env.BUILD_TAG }}"/' app-chart/values.yaml
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.email "santiagoagustinfernandez@gmail.com"
-        git config --global user.name "Santiago Fernandez"
-        git add app-chart/values.yaml
-        git commit -m "Update tag '${{ env.BUILD_TAG }}'"
-        git push
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "santiagoagustinfernandez@gmail.com"
+          git config --global user.name "Santiago Fernandez"
+          git add app-chart/values.yaml
+          git commit -m "Update tag to '${{ env.BUILD_TAG }}' after building image"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Asegúrate de incluir el token
