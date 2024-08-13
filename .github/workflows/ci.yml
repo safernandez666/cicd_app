@@ -37,6 +37,8 @@ jobs:
           tags: safernandez666/app:latest, safernandez666/app:${{ env.BUILD_TAG }}
 
   update-newtag-in-helm-chart:
+    name: Update Tag on Helm Charts
+    needs: build  # Esto asegura que este trabajo depende de 'build'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -46,7 +48,7 @@ jobs:
 
     - name: Update tag in Helm chart
       run: |
-        sed -i 's/tag: .*/tag: "${{ env.BUILD_TAG }}"/' helm/go-web-app-chart/values.yaml
+        sed -i 's/tag: .*/tag: "'"${{ env.BUILD_TAG }}"'"/' app-chart/values.yaml
 
     - name: Commit and push changes
       run: |
