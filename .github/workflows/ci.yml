@@ -51,4 +51,4 @@ jobs:
           git commit -m "Update tag to '${{ env.BUILD_TAG }}' after building image"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Asegúrate de incluir el token
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}  # Asegúrate de incluir el token
